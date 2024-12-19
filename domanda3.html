@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifica 5F - Domanda 3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #a2d8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            position: relative;
+        }
+
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #timer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .question-container {
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .question-container textarea {
+            width: 100%;
+            height: 150px;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #003d73;
+        }
+
+        .submit-button {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+        }
+
+        #alert-message {
+            color: red;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        #char-count {
+            font-size: 14px;
+            color: #333;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Verifica 5F - Domanda 3</h1>
+    <div id="timer">30:00</div>
+
+    <div class="question-container">
+        <p id="question-id"></p>
+        <p id="question-text">Caricamento domanda...</p>
+
+        <textarea id="answer" placeholder="Inserisci la tua risposta qui..." maxlength="150"></textarea>
+        <div id="char-count">0 / 150 caratteri</div>
+    </div>
+
+    <div class="buttons-container">
+        <button onclick="window.location.href='index.html'">Homepage</button>
+    </div>
+
+    <!-- Aggiungi il pulsante "Invia" -->
+    <div class="submit-button">
+        <button id="submit-button" onclick="submitAnswer()">Invia</button>
+    </div>
+
+    <!-- Messaggio di errore che appare se l'utente prova a inviare la risposta di nuovo -->
+    <div id="alert-message"></div>
+
+    <script>
+        // Flag per verificare se la risposta è già stata inviata
+        let answerSubmitted = false;
+
+        // Funzione per caricare la domanda dal file JSON
+        fetch('domande.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Errore nel caricamento del file JSON');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Trova la domanda con id 1 nella sezione domande_aperte
+                const questionData = data.domande_aperte.find(q => q.id === 3);
+
+                if (questionData) {
+                    // Mostra l'ID della domanda e il testo della domanda
+                    document.getElementById('question-id').textContent = `Domanda ${questionData.id}:`;
+                    document.getElementById('question-text').textContent = questionData.domanda;
+                } else {
+                    console.error('Domanda con id 1 non trovata');
+                    document.getElementById('question-text').textContent = 'Domanda non trovata.';
+                }
+            })
+            .catch(error => {
+                console.error('Errore nel caricamento delle domande:', error);
+                document.getElementById('question-text').textContent = 'Errore nel caricamento della domanda.';
+            });
+
+        // Funzione per gestire il click sul pulsante "Invia"
+        function submitAnswer() {
+            if (answerSubmitted) {
+                // Se la risposta è già stata inviata, mostra un messaggio
+                document.getElementById('alert-message').textContent = "Risposta già inviata.";
+                return;
+            }
+
+            const answer = document.getElementById('answer').value;
+            if (answer.trim() === '') {
+                alert('Per favore, inserisci una risposta.');
+                return;
+            }
+
+            // Salva la risposta nel localStorage
+            localStorage.setItem('rispostadomanda3', answer);
+
+            // Segna che la risposta è stata inviata e disabilita il pulsante
+            answerSubmitted = true;
+            document.getElementById('submit-button').disabled = true;
+            document.getElementById('alert-message').textContent = "Risposta inviata con successo!";
+        }
+
+        // Funzione per aggiornare il conteggio dei caratteri
+        const textarea = document.getElementById('answer');
+        const charCount = document.getElementById('char-count');
+
+        textarea.addEventListener('input', function () {
+            const currentLength = textarea.value.length;
+            charCount.textContent = `${currentLength} / 150 caratteri`;
+
+            // Disabilita l'input se si raggiunge il limite
+            if (currentLength >= 150) {
+                textarea.value = textarea.value.substring(0, 150);  // Limita la lunghezza a 150 caratteri
+            }
+        });
+
+        window.onload = function () {
+
+            // Azzera il campo di input e il conteggio caratteri
+            document.getElementById('answer').value = '';
+            charCount.textContent = '0 / 150 caratteri';
+        };
+
+        // Controlliamo se esiste un tempo rimanente salvato nella sessione
+        let timeLeft = sessionStorage.getItem('timeLeft') ? parseInt(sessionStorage.getItem('timeLeft')) : 30 * 60;
+
+        // Funzione per aggiornare il timer visualizzato
+        function updateTimerDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            // Formatting per avere sempre 2 cifre per i secondi
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+        }
+
+        // Funzione per decrementare il timer ogni secondo
+        function countdown() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                sessionStorage.setItem('timeLeft', timeLeft); // Salva il tempo rimanente nel sessionStorage
+                updateTimerDisplay();
+            } else {
+                clearInterval(timerInterval); // Ferma il timer quando è scaduto
+                sessionStorage.removeItem('timeLeft'); // Rimuove il tempo salvato
+            }
+        }
+
+        // Mostra il timer subito appena carica la pagina
+        updateTimerDisplay();
+
+        // Inizializza il countdown che si aggiorna ogni secondo
+        let timerInterval = setInterval(countdown, 1000);
+
+        // Funzione per mostrare l'alert allo scadere del timer
+        function showAlert() {
+            alert("Il tempo è scaduto! Non puoi più continuare il test.");
+        }
+
+    </script>
+
+</body>
+</html>

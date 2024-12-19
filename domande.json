@@ -1,0 +1,44 @@
+{
+    "domande_aperte": [
+      {
+        "id": 1,
+        "domanda": "Cos'è un algoritmo e quali sono le sue caratteristiche principali?",
+        "risposta": ""
+      },
+      {
+        "id": 2,
+        "domanda": "Cos'è un database e quali linguaggi posso usare per programmare un database?",
+        "risposta": ""
+      },
+      {
+        "id": 3,
+        "domanda": "Descrivi i livelli della pila ISO/OSI e il loro ruolo nelle comunicazioni di rete.",
+        "risposta": ""
+      }
+    ],
+    "domande_crocette": [
+      {
+        "id": 1,
+        "domanda": "Il linguaggio di programmazione ... è il linguaggio di basso livello per eccellenza. Ogni istruzione corrisponde direttamente a una istruzione del processore, permettendo un controllo completo e preciso dell'hardware, ma richiede una grande conoscenza del funzionamento della macchina.",
+        "opzioni": [
+          "A) Python",
+          "B) C",
+          "C) Assembly",
+          "D) JavaScript"
+        ],
+        "risposta": "C"
+      },
+      {
+        "id": 2,
+        "domanda": "Il protocollo ... (HTTP) è un protocollo di comunicazione utilizzato per il trasferimento di dati tra client e server su una rete, in particolare su Internet. HTTP è alla base del funzionamento del World Wide Web, consentendo la trasmissione di pagine web, immagini, video e altri tipi di contenuti tra i browser e i server web.",
+        "opzioni": [
+          "A) HyperText Transport Protocol",
+          "B) HyperText Transfer Protocol",
+          "C) Hyper Transfer Text Protocol",
+          "D) HyperTerminal Text Protocol"
+        ],
+        "risposta": "B"
+      }
+    ]
+  }
+  

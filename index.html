@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifica 5F</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #a2d8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            position: relative;
+        }
+
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            width: 60%;
+        }
+
+        .buttons-left,
+        .buttons-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #003d73;
+        }
+
+        #timer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #correggi {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        #correggi:hover {
+            background-color: #003d73;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Verifica 5F</h1>
+    <div id="timer">30:00</div>
+
+    <div class="buttons-container">
+        <!-- Colonna di pulsanti a sinistra -->
+        <div class="buttons-left">
+            <button onclick="window.location.href='domanda1.html'">Domanda 1</button>
+            <button onclick="window.location.href='domanda2.html'">Domanda 2</button>
+            <button onclick="window.location.href='domanda3.html'">Domanda 3</button>
+        </div>
+
+        <!-- Colonna di pulsanti a destra -->
+        <div class="buttons-right">
+            <button onclick="window.location.href='testo1.html'">Testo 1</button>
+            <button onclick="window.location.href='testo2.html'">Testo 2</button>
+        </div>
+    </div>
+
+    <!-- Pulsante Correggi in basso a destra -->
+    <button id="correggi" onclick="salvaRisposte()">Correggi</button>
+
+    <script>
+        // Domande e risposte
+        function salvaRisposte() {
+            // Recupera tutte le risposte salvate nel localStorage
+            const risposte = {
+                domanda1: localStorage.getItem('rispostadomanda1'),
+                domanda2: localStorage.getItem('rispostadomanda2'),
+                domanda3: localStorage.getItem('rispostadomanda3'),
+                testo1: localStorage.getItem('rispostatesto1'),
+                testo2: localStorage.getItem('rispostatesto2'),
+                timestamp: new Date().toISOString()  // Salva la data e ora
+            };
+
+            // Crea il contenuto del file di testo, solo con le risposte effettive
+            let contenuto = 'Risposte fornite dall\'utente:\n\n';
+
+            // Aggiungi le risposte al contenuto, solo se esistono
+            for (let domanda in risposte) {
+                if (risposte[domanda]) {
+                    contenuto += `${domanda.charAt(0).toUpperCase() + domanda.slice(1)}: ${risposte[domanda]}\n`;
+                }
+            }
+
+            // Crea un oggetto Blob per il contenuto
+            const blob = new Blob([contenuto], { type: 'text/plain' });
+
+            // Crea un URL per il Blob
+            const url = URL.createObjectURL(blob);
+
+            // Crea un link temporaneo per il download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'risposte.txt';  // Nome del file che verrà scaricato
+            a.click();  // Simula il click per avviare il download
+
+            // Libera l'URL creato
+            URL.revokeObjectURL(url);
+        }
+
+        // Timer
+        // Controlliamo se esiste un tempo rimanente salvato nella sessione
+        let timeLeft = sessionStorage.getItem('timeLeft') ? parseInt(sessionStorage.getItem('timeLeft')) : 30 * 60;
+
+        // Funzione per aggiornare il timer visualizzato
+        function updateTimerDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            // Formatting per avere sempre 2 cifre per i secondi
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+        }
+
+        // Funzione per decrementare il timer ogni secondo
+        function countdown() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                sessionStorage.setItem('timeLeft', timeLeft); // Salva il tempo rimanente nel sessionStorage
+                updateTimerDisplay();
+            } else {
+                clearInterval(timerInterval); // Ferma il timer quando è scaduto
+                sessionStorage.removeItem('timeLeft'); // Rimuove il tempo salvato
+            }
+        }
+
+        // Mostra il timer subito appena carica la pagina
+        updateTimerDisplay();
+
+        // Inizializza il countdown che si aggiorna ogni secondo
+        let timerInterval = setInterval(countdown, 1000);
+
+        // Funzione per mostrare l'alert allo scadere del timer
+        function showAlert() {
+            alert("Il tempo è scaduto! Non puoi più continuare il test.");
+        }
+
+    </script>
+
+</body>
+</html>
